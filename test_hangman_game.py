@@ -3,24 +3,24 @@ from hangman.game import HangmanGame, GuessWord
 from hangman.exceptions import *
 
 
-def test_select_random_word_with_one_word():
+def test_select_random_word_with_one_word():            #passed     
     list_of_words = ['rmotr']
     word_to_guess = HangmanGame.select_random_word(list_of_words)
     assert word_to_guess == 'rmotr'
 
 
-def test_select_random_word_with_many_words():
+def test_select_random_word_with_many_words():          #passed
     list_of_words = ['rmotr', 'python', 'intro']
     word_to_guess = HangmanGame.select_random_word(list_of_words)
     assert word_to_guess in list_of_words
 
 
-def test_select_random_word_with_empty_list():
+def test_select_random_word_with_empty_list():          #passed
     with pytest.raises(InvalidListOfWordsException):
         HangmanGame.select_random_word([])
 
 
-def test_start_new_game_initial_state_with_number_of_guesses():
+def test_start_new_game_initial_state_with_number_of_guesses():     #passed
     game = HangmanGame(['Python'], number_of_guesses=3)
 
     assert game.remaining_misses == 3
@@ -28,7 +28,7 @@ def test_start_new_game_initial_state_with_number_of_guesses():
     assert game.previous_guesses == []
 
 
-def test_start_new_game_initial_state_with_default_attempts():
+def test_start_new_game_initial_state_with_default_attempts():      #passed
     game = HangmanGame(['Python'])
 
     assert game.remaining_misses == 5
@@ -36,7 +36,7 @@ def test_start_new_game_initial_state_with_default_attempts():
     assert game.previous_guesses == []
 
 
-def test_start_new_game_initial_state_with_default_word_list():
+def test_start_new_game_initial_state_with_default_word_list():     #passed
     assert HangmanGame.WORD_LIST == ['rmotr', 'python', 'awesome']
     game = HangmanGame()
 
@@ -47,17 +47,18 @@ def test_start_new_game_initial_state_with_default_word_list():
     assert game.word.answer in HangmanGame.WORD_LIST
 
 
-def test_game_with_one_correct_guess():
-    game = HangmanGame(['Python'])
-    attempt = game.guess('y')
+def test_game_with_one_correct_guess():                         #passed...FINALLY
+    game = HangmanGame(['Python']) #game is HangmanGame object
+    attempt = game.guess('y')       #attempt is actually a GuessWord object the way I set it up
 
-    assert attempt.is_hit() is True
-    assert game.remaining_misses == 5
-    assert game.previous_guesses == ['y']
-    assert game.word.masked == '*y****'
+    assert attempt.is_hit() is True     #is_hit is a GuessWord method so this should work
+    assert game.remaining_misses == 5       #should be ok
+    assert game.previous_guesses == ['y']   #should be ok
+    assert game.word.masked == '*y****'     #game.word is GuessWord object. masked is GuessWord attribute
+                                            #y should be updated when game.guess method is called. 
 
 
-def test_game_with_two_correct_guesses_same_move():
+def test_game_with_two_correct_guesses_same_move():                     #passed
     game = HangmanGame(['rmotr'])
     attempt = game.guess('r')
 
@@ -67,7 +68,7 @@ def test_game_with_two_correct_guesses_same_move():
     assert game.word.masked == 'r***r'
 
 
-def test_game_with_one_incorrect_guess():
+def test_game_with_one_incorrect_guess():                               #pass
     game = HangmanGame(['Python'])
     attempt = game.guess('x')  # Miss!
 
@@ -77,7 +78,7 @@ def test_game_with_one_incorrect_guess():
     assert game.word.masked == '******'
 
 
-def test_game_with_several_incorrect_guesses():
+def test_game_with_several_incorrect_guesses():                         #pass
     game = HangmanGame(['Python'])
 
     attempt = game.guess('x')  # Miss!
@@ -93,7 +94,7 @@ def test_game_with_several_incorrect_guesses():
     assert game.word.masked == '******'
 
 
-def test_game_with_several_correct_guesses():
+def test_game_with_several_correct_guesses():   #pass
     game = HangmanGame(['Python'])
 
     attempt = game.guess('y')
@@ -115,7 +116,7 @@ def test_game_with_several_correct_guesses():
     assert game.word.masked == '*yt*o*'
 
 
-def test_game_with_several_correct_and_incorrect_guesses():
+def test_game_with_several_correct_and_incorrect_guesses(): #pass
     game = HangmanGame(['Python'])
 
     attempt = game.guess('y')
@@ -143,7 +144,7 @@ def test_game_with_several_correct_and_incorrect_guesses():
     assert game.word.masked == '*y**o*'
 
 
-def test_guess_word_is_case_insensitve():
+def test_guess_word_is_case_insensitve():   #pass
     game = HangmanGame(['Python'])
 
     attempt = game.guess('p')
@@ -159,13 +160,13 @@ def test_guess_word_is_case_insensitve():
     assert game.word.masked == 'p****n'
 
 
-def test_game_wins_first_try():
+def test_game_wins_first_try():         #passed
     game = HangmanGame(['aaa'])
 
     with pytest.raises(GameWonException):
         game.guess('a')
 
-    assert game.is_finished() is True
+    assert game.is_finished() is True  #game is HangmanGame object
     assert game.is_won() is True
     assert game.is_lost() is False
 
@@ -174,7 +175,7 @@ def test_game_wins_first_try():
     assert game.word.masked == 'aaa'
 
 
-def test_game_loses_first_try():
+def test_game_loses_first_try():    #pass
     game = HangmanGame(['Python'], number_of_guesses=1)
 
     with pytest.raises(GameLostException):
@@ -189,7 +190,7 @@ def test_game_loses_first_try():
     assert game.word.masked == '******'
 
 
-def test_game_wins_several_moves_repeated_words():
+def test_game_wins_several_moves_repeated_words():      #pass
     game = HangmanGame(['aba'])
 
     attempt = game.guess('a')
@@ -210,7 +211,7 @@ def test_game_wins_several_moves_repeated_words():
     assert game.word.masked == 'aba'
 
 
-def test_game_wins_several_moves():
+def test_game_wins_several_moves():             #pass
     game = HangmanGame(['abc'])
 
     attempt = game.guess('a')
@@ -237,7 +238,7 @@ def test_game_wins_several_moves():
     assert game.word.masked == 'abc'
 
 
-def test_game_wins_several_moves_some_misses():
+def test_game_wins_several_moves_some_misses():         #pass
     game = HangmanGame(['abc'])
 
     attempt = game.guess('a')
@@ -276,7 +277,7 @@ def test_game_wins_several_moves_some_misses():
     assert game.word.masked == 'abc'
 
 
-def test_game_loses_several_guesses():
+def test_game_loses_several_guesses():              #pass
     game = HangmanGame(['Python'], number_of_guesses=3)
 
     attempt = game.guess('x')  # Miss!
@@ -303,7 +304,7 @@ def test_game_loses_several_guesses():
     assert game.word.masked == '******'
 
 
-def test_game_loses_with_some_correct_guesses():
+def test_game_loses_with_some_correct_guesses():                #pass
     game = HangmanGame(['Python'], number_of_guesses=3)
 
     attempt = game.guess('y')
@@ -342,7 +343,7 @@ def test_game_loses_with_some_correct_guesses():
     assert game.word.masked == '*yt***'
 
 
-def test_game_already_won_raises_game_finished():
+def test_game_already_won_raises_game_finished():                          #pass          
     game = HangmanGame(['aaa'])
 
     with pytest.raises(GameWonException):
@@ -356,7 +357,7 @@ def test_game_already_won_raises_game_finished():
         game.guess('x')
 
 
-def test_game_already_lost_raises_game_finished():
+def test_game_already_lost_raises_game_finished():                         #pass
     game = HangmanGame(['Python'], number_of_guesses=1)
 
     with pytest.raises(GameLostException):
